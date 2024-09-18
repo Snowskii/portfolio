@@ -20,32 +20,34 @@ const CreateGame: React.FC<CreateGameProps> = ({ img }) => {
     const player2Trimmed = player2Input.trim();
     const player3Trimmed = player3Input.trim();
 
+
     if (playerCount === "2 Players") {
       if (!player1Trimmed || !player2Trimmed) {
         setErrorMessage("Please fill out both player names.");
-      } else {
-        setErrorMessage("");
-        navigate("/bangtheduelgenerator/game-generator", {
-          state: {
-            player1: player1Trimmed,
-            player2: player2Trimmed,
-          },
-        });
+        return;
       }
+
+      setErrorMessage("");
+      navigate("/bangtheduelgenerator/game-generator", {
+        state: { player1: player1Trimmed, player2: player2Trimmed },
+      });
     } else if (playerCount === "3 Players") {
       if (!player1Trimmed || !player2Trimmed || !player3Trimmed) {
         setErrorMessage("Please fill out all three player names.");
-      } else {
-        setErrorMessage("");
-        navigate("/bangtheduelgenerator/game-generator", {
-          state: {
-            player1: player1Trimmed,
-            player2: player2Trimmed,
-            player3: player3Trimmed,
-          },
-        });
+        return;
       }
+
+      setErrorMessage("");
+      navigate("/bangtheduelgenerator/game-generator", {
+        state: {
+          player1: player1Trimmed,
+          player2: player2Trimmed,
+          player3: player3Trimmed,
+        },
+      });
     }
+
+    return;
   };
 
   const handlePlayerCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
