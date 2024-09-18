@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import HomeScreen from "./screens/homeScreen.tsx";
+import HomeScreen from "./screens/HomeScreen.tsx";
 import BangHomeScreen from "./screens/BangTheDuelGenerator/BangHomeScreen.tsx";
 import GameGeneratorScreen from "./screens/BangTheDuelGenerator/GameGeneratorScreen.tsx";
 
