@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./GameGenerator.css";
@@ -27,17 +27,14 @@ const GameGeneratorScreen: React.FC = () => {
   const [results, setResults] = useState<Result[]>([]);
 
   const location = useLocation();
-  const state = location.state as { player1: string; player2: string; player3?: string };
+  const state = location.state as {
+    player1: string;
+    player2: string;
+    player3?: string;
+  };
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setPlayer1(state.player1 || "Unknown Player 1");
-    setPlayer2(state.player2 || "Unknown Player 2");
-    setPlayer3(state.player3 || "Unknown Player 3");
-    generateAnotherGame();
-  }, [state]);
-
-  const generateRandomNumbers = (): string => {
+  const generateRandomNumbers = useCallback((): string => {
     const length = game.includes("Reinforcements") ? 18 : 12;
     const numbers = Array.from({ length }, (_, i) => i + 1);
     for (let i = numbers.length - 1; i > 0; i--) {
@@ -48,9 +45,9 @@ const GameGeneratorScreen: React.FC = () => {
       .slice(0, 4)
       .sort((a, b) => a - b)
       .join(", ");
-  };
+  }, [game]);
 
-  const generateAnotherGame = () => {
+  const generateAnotherGame = useCallback(() => {
     const gameTypes = [
       "Reinforcements - Sheriffs vs Bandits",
       "Reinforcements - Bandits vs Sheriffs",
@@ -65,16 +62,61 @@ const GameGeneratorScreen: React.FC = () => {
     const randomGameType =
       gameTypes[Math.floor(Math.random() * gameTypes.length)];
 
+    const newPlayer1Generation = generateRandomNumbers();
+    const newPlayer2Generation = generateRandomNumbers();
+    const newPlayer3Generation = state.player3 ? generateRandomNumbers() : "";
+
+    // Set state
     setGame(randomGameType);
-    setPlayer1Generation(generateRandomNumbers());
-    setPlayer2Generation(generateRandomNumbers());
-    setPlayer3Generation(state.player3 ? generateRandomNumbers() : "");
+    setPlayer1Generation(newPlayer1Generation);
+    setPlayer2Generation(newPlayer2Generation);
+    setPlayer3Generation(state.player3 ? newPlayer3Generation : "");
     setSelectedWinner("");
+
+    // Save to localStorage
+    const generatedData = {
+      game: randomGameType,
+      player1Generation: newPlayer1Generation,
+      player2Generation: newPlayer2Generation,
+      player3Generation: state.player3 ? newPlayer3Generation : "",
+    };
+    saveToLocalStorage("generatedData", generatedData);
 
     // Reset radio buttons
     document.querySelectorAll('input[name="winner"]').forEach((radio) => {
       (radio as HTMLInputElement).checked = false;
     });
+  }, [generateRandomNumbers, state.player3]);
+
+  useEffect(() => {
+    setPlayer1(state.player1 || "Unknown Player 1");
+    setPlayer2(state.player2 || "Unknown Player 2");
+    setPlayer3(state.player3 || "Unknown Player 3");
+
+    // Load results and generated data from localStorage
+    const savedResults = localStorage.getItem("gameResults");
+    if (savedResults) {
+      setResults(JSON.parse(savedResults));
+    }
+
+    const savedGeneratedData = localStorage.getItem("generatedData");
+    if (savedGeneratedData) {
+      const data = JSON.parse(savedGeneratedData);
+      setGame(data.game);
+      setPlayer1Generation(data.player1Generation);
+      setPlayer2Generation(data.player2Generation);
+      setPlayer3Generation(data.player3Generation);
+    } else {
+      generateAnotherGame(); // Generate a new game if no data is found in local storage
+    }
+  }, [state, generateAnotherGame]);
+
+  const saveToLocalStorage = (key: string, data: unknown): void => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.error(`Failed to save to localStorage with key "${key}":`, error);
+    }
   };
 
   const handleWinnerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +137,11 @@ const GameGeneratorScreen: React.FC = () => {
         winner: selectedWinner,
         timestamp,
       };
-      setResults((prevResults) => [...prevResults, newResult]);
+      setResults((prevResults) => {
+        const updatedResult = [...prevResults, newResult];
+        saveToLocalStorage("gameResults", updatedResult);
+        return updatedResult;
+      });
     }
   };
 
@@ -117,6 +163,10 @@ const GameGeneratorScreen: React.FC = () => {
     a.download = `game-results-${timestamp}.json`;
     a.click();
     URL.revokeObjectURL(url);
+
+    // Clear local storage
+    localStorage.removeItem("gameResults");
+    localStorage.removeItem("generatedData");
 
     setResults([]);
     navigate("/");
