@@ -8,7 +8,13 @@ const HomeScreen: React.FC = () => {
         <ul>
           <li>
             <Link to="/bangtheduelgenerator">
-              Go to Bang The Duel Generator
+              Go to Bang The Duel Generator.
+            </Link>
+          </li>
+
+          <li>
+            <Link to="/loveyoupage">
+              Go to I love you page.
             </Link>
           </li>
         </ul>

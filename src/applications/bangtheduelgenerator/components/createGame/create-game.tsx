@@ -20,7 +20,6 @@ const CreateGame: React.FC<CreateGameProps> = ({ img }) => {
     const player2Trimmed = player2Input.trim();
     const player3Trimmed = player3Input.trim();
 
-
     if (playerCount === "2 Players") {
       if (!player1Trimmed || !player2Trimmed) {
         setErrorMessage("Please fill out both player names.");
@@ -55,75 +54,77 @@ const CreateGame: React.FC<CreateGameProps> = ({ img }) => {
   };
 
   return (
-    <div className="container">
-      <div className="logo">
-        <img src={img} alt="Game Logo" />
-      </div>
-      <div className="player-count">
-        <h2>Choose Player Count</h2>
-        <label>
-          <input
-            type="radio"
-            name="playerCount"
-            value="2 Players"
-            onChange={handlePlayerCountChange}
-            checked={playerCount === "2 Players"}
-          />
-          2 Players
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="playerCount"
-            value="3 Players"
-            onChange={handlePlayerCountChange}
-            checked={playerCount === "3 Players"}
-          />
-          3 Players
-        </label>
-      </div>
-      <div className="player-container">
-        <div className="player">
-          <label htmlFor="player1">Player 1</label>
-          <input
-            type="text"
-            id="player1"
-            name="player1"
-            placeholder="Name"
-            value={player1Input}
-            onChange={(e) => setPlayer1Input(e.target.value)}
-          />
+    <div className="rootDiv">
+      <div className="container">
+        <div className="logo">
+          <img src={img} alt="Game Logo" />
         </div>
-        <div className="player">
-          <label htmlFor="player2">Player 2</label>
-          <input
-            type="text"
-            id="player2"
-            name="player2"
-            placeholder="Name"
-            value={player2Input}
-            onChange={(e) => setPlayer2Input(e.target.value)}
-          />
+        <div className="player-count">
+          <h2>Choose Player Count</h2>
+          <label>
+            <input
+              type="radio"
+              name="playerCount"
+              value="2 Players"
+              onChange={handlePlayerCountChange}
+              checked={playerCount === "2 Players"}
+            />
+            2 Players
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="playerCount"
+              value="3 Players"
+              onChange={handlePlayerCountChange}
+              checked={playerCount === "3 Players"}
+            />
+            3 Players
+          </label>
         </div>
-        {playerCount === "3 Players" && (
+        <div className="player-container">
           <div className="player">
-            <label htmlFor="player3">Player 3</label>
+            <label htmlFor="player1">Player 1</label>
             <input
               type="text"
-              id="player3"
-              name="player3"
+              id="player1"
+              name="player1"
               placeholder="Name"
-              value={player3Input}
-              onChange={(e) => setPlayer3Input(e.target.value)}
+              value={player1Input}
+              onChange={(e) => setPlayer1Input(e.target.value)}
             />
           </div>
-        )}
-      </div>
+          <div className="player">
+            <label htmlFor="player2">Player 2</label>
+            <input
+              type="text"
+              id="player2"
+              name="player2"
+              placeholder="Name"
+              value={player2Input}
+              onChange={(e) => setPlayer2Input(e.target.value)}
+            />
+          </div>
+          {playerCount === "3 Players" && (
+            <div className="player">
+              <label htmlFor="player3">Player 3</label>
+              <input
+                type="text"
+                id="player3"
+                name="player3"
+                placeholder="Name"
+                value={player3Input}
+                onChange={(e) => setPlayer3Input(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
 
-      {errorMessage && <div className="error">{errorMessage}</div>}
+        {errorMessage && <div className="error">{errorMessage}</div>}
 
-      <div className="create-session">
-        <button onClick={createSession}>Create a session</button>
+        <div className="create-session">
+          <button onClick={createSession}>Create a session</button>
+        </div>
       </div>
     </div>
   );
